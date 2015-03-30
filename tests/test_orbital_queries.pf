@@ -45,4 +45,74 @@ use orbital_queries
     @assertTrue(is_virtual(4))
 end subroutine test_virtual_orbital
 
+@test
+subroutine test_frozen_frozen(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_frozen_frozen(1, 1))
+end subroutine test_frozen_frozen
+
+@test
+subroutine test_inactive_frozen(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_inactive_frozen(2, 1))
+end subroutine test_inactive_frozen
+
+@test
+subroutine test_active_frozen(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_active_frozen(3, 1))
+end subroutine test_active_frozen
+
+@test
+subroutine test_virtual_frozen(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_virtual_frozen(4, 1))
+end subroutine test_virtual_frozen
+
+@test
+subroutine test_inactive_inactive(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_inactive_inactive(2, 2))
+end subroutine test_inactive_inactive
+
+@test
+subroutine test_active_inactive(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_active_inactive(3, 2))
+end subroutine test_active_inactive
+
+@test
+subroutine test_virtual_inactive(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_virtual_inactive(4, 2))
+end subroutine test_virtual_inactive
+
+@test
+subroutine test_active_active(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_active_active(3, 3))
+end subroutine test_active_active
+
+@test
+subroutine test_virtual_active(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_virtual_active(4, 3))
+end subroutine test_virtual_active
+
+@test
+subroutine test_virtual_virtual(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_virtual_virtual(4, 4))
+end subroutine test_virtual_virtual
+
 end module test_yo
