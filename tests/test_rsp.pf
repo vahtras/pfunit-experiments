@@ -1,10 +1,23 @@
 module test_yo
+use pfunit_mod
+
+@testcase
+    type, extends(TestCase) :: type_yo
+    contains
+        procedure :: setUp
+    end type
 contains
 
+subroutine setUp(this)
+    class(type_yo), intent(inout) :: this
+end subroutine setUp
+
+
 @test
-subroutine test_orbital_type()
+subroutine test_orbital_type(this)
 use pfunit_mod
 use orbital_queries
+    class(type_yo), intent(inout) :: this
 #include "maxorb.h"
 #include "maxash.h"
 #include "infind.h"
