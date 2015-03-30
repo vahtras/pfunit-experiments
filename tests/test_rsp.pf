@@ -38,4 +38,11 @@ use orbital_queries
     @assertTrue(is_active(3))
 end subroutine test_active_orbital
 
+@test
+subroutine test_virtual_orbital(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_virtual(4))
+end subroutine test_virtual_orbital
+
 end module test_yo

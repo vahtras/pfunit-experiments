@@ -31,4 +31,14 @@ contains
     active = iobtyp(orbital).eq.jtact
     end function is_active
 
+    function is_virtual(orbital) result(active)
+    implicit none
+    integer orbital
+    logical active
+#include "maxorb.h"
+#include "maxash.h"
+#include "infind.h"
+    active = iobtyp(orbital).eq.jtsec
+    end function is_virtual
+
 end module orbital_queries
