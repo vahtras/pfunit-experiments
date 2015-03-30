@@ -1,1 +1,1 @@
-ADD_TEST_SUITE(test_rsp_suite)
+ADD_TEST_SUITE(test_yo_suite)

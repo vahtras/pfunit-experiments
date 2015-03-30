@@ -1,3 +1,6 @@
+module test_yo
+contains
+
 @test
 subroutine test_orbital_type()
 use pfunit_mod
@@ -8,3 +11,5 @@ use orbital_queries
 iobtyp(1) = 1
 @assertTrue(is_frozen(1))
 end subroutine test_orbital_type
+
+end module test_yo
