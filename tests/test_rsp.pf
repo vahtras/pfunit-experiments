@@ -10,19 +10,32 @@ contains
 
 subroutine setUp(this)
     class(type_yo), intent(inout) :: this
+#include "maxorb.h"
+#include "maxash.h"
+#include "infind.h"
+    iobtyp(1:6) = (/1, 2, 3, 4, 5, 6/)
 end subroutine setUp
 
 
 @test
-subroutine test_orbital_type(this)
-use pfunit_mod
+subroutine test_frozen_orbital(this)
 use orbital_queries
     class(type_yo), intent(inout) :: this
-#include "maxorb.h"
-#include "maxash.h"
-#include "infind.h"
-iobtyp(1) = 1
-@assertTrue(is_frozen(1))
-end subroutine test_orbital_type
+    @assertTrue(is_frozen(1))
+end subroutine test_frozen_orbital
+
+@test
+subroutine test_inactive_orbital(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_inactive(2))
+end subroutine test_inactive_orbital
+
+@test
+subroutine test_active_orbital(this)
+use orbital_queries
+    class(type_yo), intent(inout) :: this
+    @assertTrue(is_active(3))
+end subroutine test_active_orbital
 
 end module test_yo

@@ -11,4 +11,24 @@ contains
     frozen = iobtyp(orbital).eq.jtfro
     end function is_frozen
 
+    function is_inactive(orbital) result(inactive)
+    implicit none
+    integer orbital
+    logical inactive
+#include "maxorb.h"
+#include "maxash.h"
+#include "infind.h"
+    inactive = iobtyp(orbital).eq.jtinac
+    end function is_inactive
+
+    function is_active(orbital) result(active)
+    implicit none
+    integer orbital
+    logical active
+#include "maxorb.h"
+#include "maxash.h"
+#include "infind.h"
+    active = iobtyp(orbital).eq.jtact
+    end function is_active
+
 end module orbital_queries
