@@ -38,70 +38,70 @@ contains
     implicit none
     integer:: orbital1, orbital2
     logical:: frofro
-    frofro = idbtyp(orbital1, orbital2) .eq. jtfrfr
+    frofro = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtfrfr
     end function is_frozen_frozen
 
     function is_inactive_frozen(orbital1, orbital2) result(frofro)
     implicit none
     integer:: orbital1, orbital2
     logical:: frofro
-    frofro = idbtyp(orbital1, orbital2) .eq. jtinfr
+    frofro = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtinfr
     end function is_inactive_frozen
 
     function is_active_frozen(orbital1, orbital2) result(actfro)
     implicit none
     integer:: orbital1, orbital2
     logical:: actfro
-    actfro = idbtyp(orbital1, orbital2) .eq. jtacfr
+    actfro = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtacfr
     end function is_active_frozen
 
     function is_virtual_frozen(orbital1, orbital2) result(virfro)
     implicit none
     integer:: orbital1, orbital2
     logical:: virfro
-    virfro = idbtyp(orbital1, orbital2) .eq. jtsefr
+    virfro = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtsefr
     end function is_virtual_frozen
 
     function is_inactive_inactive(orbital1, orbital2) result(inin)
     implicit none
     integer:: orbital1, orbital2
     logical:: inin
-    inin = idbtyp(orbital1, orbital2) .eq. jtinin
+    inin = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtinin
     end function is_inactive_inactive
 
     function is_active_inactive(orbital1, orbital2) result(actin)
     implicit none
     integer:: orbital1, orbital2
     logical:: actin
-    actin = idbtyp(orbital1, orbital2) .eq. jtacin
+    actin = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtacin
     end function is_active_inactive
 
     function is_virtual_inactive(orbital1, orbital2) result(virin)
     implicit none
     integer:: orbital1, orbital2
     logical:: virin
-    virin = idbtyp(orbital1, orbital2) .eq. jtsein
+    virin = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtsein
     end function is_virtual_inactive
 
     function is_active_active(orbital1, orbital2) result(actact)
     implicit none
     integer:: orbital1, orbital2
     logical:: actact
-    actact = idbtyp(orbital1, orbital2) .eq. jtacac
+    actact = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtacac
     end function is_active_active
 
     function is_virtual_active(orbital1, orbital2) result(virac)
     implicit none
     integer:: orbital1, orbital2
     logical:: virac
-    virac = idbtyp(orbital1, orbital2) .eq. jtseac
+    virac = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtseac
     end function is_virtual_active
 
     function is_virtual_virtual(orbital1, orbital2) result(virvir)
     implicit none
     integer:: orbital1, orbital2
     logical:: virvir
-    virvir = idbtyp(orbital1, orbital2) .eq. jtsese
+    virvir = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtsese
     end function is_virtual_virtual
 
 end module orbital_queries
