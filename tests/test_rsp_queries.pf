@@ -1,0 +1,59 @@
+module test_rsp
+use pfunit_mod
+#include "inforb.h"
+#include "wrkrsp.h"
+
+@testcase
+    type, extends(TestCase) :: type_rsp
+    contains
+        procedure :: setUp
+    end type
+contains
+
+subroutine setUp(this)
+    class(type_rsp), intent(inout) :: this
+end subroutine setUp
+
+
+@test
+subroutine test_orbital_gradient(this)
+use rotation_queries
+    class(type_rsp), intent(inout) :: this
+    kzwopt = 1
+    @assertTrue(is_orbital_gradient())
+end subroutine test_orbital_gradient
+
+@test
+subroutine test_no_orbital_gradient(this)
+use rotation_queries
+    class(type_rsp), intent(inout) :: this
+    kzwopt = 0
+    @assertFalse(is_orbital_gradient())
+end subroutine test_no_orbital_gradient
+
+@test
+subroutine test_configuration_gradient(this)
+use rotation_queries
+    class(type_rsp), intent(inout) :: this
+    kzconf = 2
+    @assertTrue(is_configuration_gradient())
+end subroutine test_configuration_gradient
+
+@test
+subroutine test_no_configuration_gradient(this)
+use rotation_queries
+    class(type_rsp), intent(inout) :: this
+    kzconf = 0
+    @assertFalse(is_configuration_gradient())
+end subroutine test_no_configuration_gradient
+
+@test
+subroutine test_configuration_gradient_single_ref(this)
+use rotation_queries
+    class(type_rsp), intent(inout) :: this
+    kzconf = 1
+    nsym = 1
+    @assertFalse(is_configuration_gradient())
+end subroutine test_configuration_gradient_single_ref
+
+end module test_rsp

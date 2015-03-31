@@ -22,7 +22,7 @@ TESTS:
 
 tests: all
 
-$(EXE): testSuites.inc sir_queries.o test_orbital_queries.pf TESTS
+$(EXE): testSuites.inc sir_queries.o rsp_queries.o test_orbital_queries.pf test_rsp_queries.pf TESTS
 	$(FC) -o $@ -I$(PFUNIT)/mod -I$(PFUNIT)/include -Itests $(PFUNIT)/include/driver.F90 $(TEST_DIR)/*$(OBJ_EXT) *$(OBJ_EXT) $(LIBS) $(FFLAGS) $(FPPFLAGS)
 
 distclean: clean
