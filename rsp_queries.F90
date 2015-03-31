@@ -1,15 +1,20 @@
+module wrkrsp_mod
+#include "wrkrsp.h"
+end module wrkrsp_mod
+
 module rotation_queries
 implicit none
-#include "wrkrsp.h"
 
 contains
     function is_orbital_gradient() result(lorb)
+    use wrkrsp_mod, only: kzwopt
     implicit none
     logical lorb
     lorb = kzwopt.gt.0
     end function is_orbital_gradient
 
     function is_configuration_gradient() result(lcon)
+    use wrkrsp_mod, only: kzconf, ksymop
     implicit none
     logical lcon
     if (ksymop .eq. 1) then
