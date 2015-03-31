@@ -15,3 +15,31 @@ export PFUNIT=/opt/pfunit/pfunit-serial
 FFLAGS += -I$(HOME)/dev/dalton/DALTON/include
 ```
 
+Compile and run the tests with
+```
+$ make
+...
+./tests.x -xml tests.xml
+........................
+Time:         0.000 seconds
+  
+ OK
+ (24 tests)
+```
+The executable `tests.x` has a help menu
+./tests.x -h
+```
+$ ./tests.x -h
+ Command line arguments:
+  
+  Options: 
+    '-h', '--help'    : Prints this message
+    '-v', '--verbose' : Logs start/stop of each test
+    '-d', '--debug'   : Logs start/stop of each test (same as -v)
+    '-o <file>'       : Diverts output to specified file
+    '-robust'         : (experimental) runs tests in a separate shell
+                        Attempts to detect/handle hangs and crashes
+    '-skip n'         : used by remote start with 'robust' internally
+                        This flag should NOT be used directly by users.
+  
+```
