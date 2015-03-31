@@ -1,0 +1,47 @@
+module test_spnorb
+use pfunit_mod
+use spnorb_queries
+
+@testcase
+    type, extends(TestCase) :: type_spnorb
+    contains
+        procedure :: setUp
+    end type
+
+contains
+
+    subroutine setUp(this)
+        class(type_spnorb), intent(inout):: this
+    end subroutine setUp
+
+    @test
+    subroutine test_one_electron(this)
+        class(type_spnorb), intent(inout):: this
+        @assertTrue(is_one_electron('X1SPNORB'))
+        @assertTrue(is_one_electron('Y1SPNORB'))
+        @assertTrue(is_one_electron('Z1SPNORB'))
+        @assertFalse(is_one_electron('W1SPNORB'))
+        @assertTrue(is_one_electron('X1MNF-SO'))
+        @assertTrue(is_one_electron('Y1MNF-SO'))
+        @assertTrue(is_one_electron('Z1MNF-SO'))
+        @assertFalse(is_one_electron('W1MNF-SO'))
+    end subroutine test_one_electron
+
+    @test
+    subroutine test_is_valid(this)
+        class(type_spnorb), intent(inout):: this
+        @assertTrue(is_valid_spin_orbit('X1SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Y1SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Z1SPNORB'))
+        @assertFalse(is_valid_spin_orbit('W1SPNORB'))
+        @assertTrue(is_valid_spin_orbit('X2SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Y2SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Z2SPNORB'))
+        @assertFalse(is_valid_spin_orbit('W2SPNORB'))
+        @assertTrue(is_valid_spin_orbit('X SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Y SPNORB'))
+        @assertTrue(is_valid_spin_orbit('Z SPNORB'))
+        @assertFalse(is_valid_spin_orbit('W SPNORB'))
+    end subroutine test_is_valid
+
+end module test_spnorb

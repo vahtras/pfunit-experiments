@@ -6,7 +6,7 @@
 
                                                                                 TOP_DIR := $(shell pwd)
 TEST_DIR=$(TOP_DIR)/tests
-VPATH = . $(TEST_DIR) 
+VPATH = . $(TEST_DIR)
 FFLAGS += -I$(HOME)/dev/dalton/DALTON/include
 
 include $(PFUNIT)/include/base.mk
@@ -22,7 +22,7 @@ TESTS:
 
 tests: all
 
-$(EXE): testSuites.inc sir_queries.o rsp_queries.o test_orbital_queries.pf test_rsp_queries.pf TESTS
+$(EXE): testSuites.inc sir_queries.o rsp_queries.o list_queries.o spnorb_queries.o test_orbital_queries.pf test_rsp_queries.pf test_spnorb_queries.pf TESTS
 	$(FC) -o $@ -I$(PFUNIT)/mod -I$(PFUNIT)/include -Itests $(PFUNIT)/include/driver.F90 $(TEST_DIR)/*$(OBJ_EXT) *$(OBJ_EXT) $(LIBS) $(FFLAGS) $(FPPFLAGS)
 
 distclean: clean
