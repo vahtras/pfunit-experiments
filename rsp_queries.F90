@@ -1,6 +1,5 @@
 module rotation_queries
 implicit none
-#include "inforb.h"
 #include "wrkrsp.h"
 
 contains
@@ -13,7 +12,7 @@ contains
     function is_configuration_gradient() result(lcon)
     implicit none
     logical lcon
-    if (nsym .eq. 1) then
+    if (ksymop .eq. 1) then
         lcon = kzconf .gt. 1
     else
         lcon = kzconf .ge. 1

@@ -43,11 +43,11 @@ subroutine test_no_configuration_gradient(this)
 end subroutine test_no_configuration_gradient
 
 @test
-subroutine test_configuration_gradient_single_ref(this)
+subroutine test_configuration_gradient_symmetry_1(this)
     class(type_rsp), intent(inout) :: this
     kzconf = 1
-    nsym = 1
+    ksymop = 1
     @assertFalse(is_configuration_gradient())
-end subroutine test_configuration_gradient_single_ref
+end subroutine test_configuration_gradient_symmetry_1
 
 end module test_rsp
