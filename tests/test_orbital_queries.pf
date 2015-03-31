@@ -1,5 +1,6 @@
 module test_yo
 use pfunit_mod
+use orbital_queries
 
 @testcase
     type, extends(TestCase) :: type_yo
@@ -10,23 +11,18 @@ contains
 
 subroutine setUp(this)
     class(type_yo), intent(inout) :: this
-#include "maxorb.h"
-#include "maxash.h"
-#include "infind.h"
     iobtyp(1:6) = (/1, 2, 2, 3, 4, 4/)
 end subroutine setUp
 
 
 @test
 subroutine test_frozen_orbital(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_frozen(1))
 end subroutine test_frozen_orbital
 
 @test
 subroutine test_inactive_orbital(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_inactive(2))
     @assertTrue(is_inactive(3))
@@ -34,14 +30,12 @@ end subroutine test_inactive_orbital
 
 @test
 subroutine test_active_orbital(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_active(4))
 end subroutine test_active_orbital
 
 @test
 subroutine test_virtual_orbital(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_virtual(5))
     @assertTrue(is_virtual(6))
@@ -49,14 +43,12 @@ end subroutine test_virtual_orbital
 
 @test
 subroutine test_frozen_frozen(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_frozen_frozen(1, 1))
 end subroutine test_frozen_frozen
 
 @test
 subroutine test_inactive_frozen(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_inactive_frozen(2, 1))
     @assertTrue(is_inactive_frozen(3, 1))
@@ -64,14 +56,12 @@ end subroutine test_inactive_frozen
 
 @test
 subroutine test_active_frozen(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_active_frozen(4, 1))
 end subroutine test_active_frozen
 
 @test
 subroutine test_virtual_frozen(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_virtual_frozen(5, 1))
     @assertTrue(is_virtual_frozen(6, 1))
@@ -79,7 +69,6 @@ end subroutine test_virtual_frozen
 
 @test
 subroutine test_inactive_inactive(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_inactive_inactive(2, 2))
     @assertTrue(is_inactive_inactive(3, 2))
@@ -88,7 +77,6 @@ end subroutine test_inactive_inactive
 
 @test
 subroutine test_active_inactive(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_active_inactive(4, 2))
     @assertTrue(is_active_inactive(4, 3))
@@ -96,7 +84,6 @@ end subroutine test_active_inactive
 
 @test
 subroutine test_virtual_inactive(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_virtual_inactive(5, 2))
     @assertTrue(is_virtual_inactive(5, 3))
@@ -106,14 +93,12 @@ end subroutine test_virtual_inactive
 
 @test
 subroutine test_active_active(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_active_active(4, 4))
 end subroutine test_active_active
 
 @test
 subroutine test_virtual_active(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_virtual_active(5, 4))
     @assertTrue(is_virtual_active(6, 4))
@@ -121,7 +106,6 @@ end subroutine test_virtual_active
 
 @test
 subroutine test_virtual_virtual(this)
-use orbital_queries
     class(type_yo), intent(inout) :: this
     @assertTrue(is_virtual_virtual(5, 5))
     @assertTrue(is_virtual_virtual(6, 5))
