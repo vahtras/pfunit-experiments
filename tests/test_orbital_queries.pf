@@ -1,6 +1,6 @@
 module test_yo
 use pfunit_mod
-use orbital_queries
+use sir_queries
 use infind_mod
 
 @testcase

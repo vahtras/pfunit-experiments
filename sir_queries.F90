@@ -5,7 +5,7 @@ module infind_mod
 #include "orbtypdef.h"
 end module infind_mod
 
-module orbital_queries
+module sir_queries
 implicit none
 
 contains
@@ -121,4 +121,4 @@ contains
     virvir = idbtyp(iobtyp(orbital1), iobtyp(orbital2)) .eq. jtsese
     end function is_virtual_virtual
 
-end module orbital_queries
+end module sir_queries
