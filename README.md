@@ -27,7 +27,6 @@ Time:         0.000 seconds
  (24 tests)
 ```
 The executable `tests.x` has a help menu
-./tests.x -h
 ```
 $ ./tests.x -h
  Command line arguments:
