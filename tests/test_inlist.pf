@@ -1,0 +1,27 @@
+@test
+subroutine test_inlist()
+use pfunit_mod
+use list_queries
+@assertTrue(is_in_list('a', (/'a', 'b', 'c'/)))
+@assertTrue(is_in_list('b', (/'a', 'b', 'c'/)))
+@assertTrue(is_in_list('c', (/'a', 'b', 'c'/)))
+end subroutine test_inlist
+
+@test
+subroutine test_not_inlist()
+use pfunit_mod
+use list_queries
+@assertFalse(is_in_list('d', (/'a', 'b', 'c'/)))
+end subroutine test_not_inlist
+
+@test
+subroutine test_return_index()
+use pfunit_mod
+use list_queries
+@assertEqual(1, get_index('a', (/'a', 'b', 'c'/)))
+@assertEqual(2, get_index('b', (/'a', 'b', 'c'/)))
+@assertEqual(3, get_index('c', (/'a', 'b', 'c'/)))
+@assertEqual(0, get_index('d', (/'a', 'b', 'c'/)))
+end subroutine test_return_index
+
+
