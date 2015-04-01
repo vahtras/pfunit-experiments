@@ -2,7 +2,7 @@ module wrkrsp_mod
 #include "wrkrsp.h"
 end module wrkrsp_mod
 
-module rotation_queries
+module rsp_queries
 implicit none
 
 contains
@@ -24,5 +24,5 @@ contains
     endif
     end function is_configuration_gradient
 
-end module rotation_queries
+end module rsp_queries
     
