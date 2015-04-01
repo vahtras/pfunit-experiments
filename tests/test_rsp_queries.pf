@@ -1,7 +1,9 @@
 module test_rsp
 use pfunit_mod
 use wrkrsp_mod
+use infhyp_mod
 use rsp_queries
+implicit none
 
 @testcase
     type, extends(TestCase) :: type_rsp
@@ -50,5 +52,27 @@ subroutine test_configuration_gradient_symmetry_1(this)
     ksymop = 1
     @assertFalse(is_configuration_gradient())
 end subroutine test_configuration_gradient_symmetry_1
+
+@test
+subroutine test_quadratic_response(this)
+    class(type_rsp), intent(inout) :: this
+    hypcal = .true.
+    somom = .false.
+    exmom = .false.
+    @assertTrue(is_quadratic_response())
+    hypcal = .false.
+    somom = .true.
+    exmom = .false.
+    @assertTrue(is_quadratic_response())
+    hypcal = .false.
+    somom = .false.
+    exmom = .true.
+    @assertTrue(is_quadratic_response())
+    hypcal = .false.
+    somom = .false.
+    exmom = .false.
+    @assertFalse(is_quadratic_response())
+end subroutine test_quadratic_response
+        
 
 end module test_rsp

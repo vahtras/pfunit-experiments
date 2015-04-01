@@ -2,6 +2,13 @@ module wrkrsp_mod
 #include "wrkrsp.h"
 end module wrkrsp_mod
 
+module infhyp_mod
+#include "rspprp.h"
+#include "infhyp.h"
+#include "infsmo.h"
+#include "infpp.h"
+end module infhyp_mod
+
 module rsp_queries
 implicit none
 
@@ -23,6 +30,14 @@ contains
         lcon = kzconf .ge. 1
     endif
     end function is_configuration_gradient
+
+    function is_quadratic_response() result(is_quadratic)
+    use infhyp_mod, only: hypcal, somom, exmom
+    implicit none
+    logical is_quadratic
+    is_quadratic = hypcal .or. somom .or. exmom
+    end function is_quadratic_response
+    
 
 end module rsp_queries
     
