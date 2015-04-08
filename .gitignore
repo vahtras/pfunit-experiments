@@ -3,3 +3,6 @@
 *.x
 *.xml
 *.gcno
+*.gcda
+*.swp
+errors.err
