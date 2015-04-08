@@ -11,7 +11,17 @@ implicit none
 contains
 
 subroutine setUp(this)
+    use inforb_mod, only: muld2h
     class(type_rsphso), intent(inout) :: this
+    muld2h = reshape(&
+             (/1,2,3,4,5,6,7,8, &
+               2,1,4,3,6,5,8,7, &
+               3,4,1,2,7,8,5,6, &
+               4,3,2,1,8,7,6,5, &
+               5,6,7,8,1,2,3,4, &
+               6,5,8,7,2,1,4,3, &
+               7,8,5,6,3,4,1,2, &
+               8,7,6,5,4,3,2,1/), (/8, 8/))
 end subroutine setUp
 
 @test
@@ -25,22 +35,39 @@ subroutine test_ceqd_gives_naught(this)
     double precision wrk(10)
     double precision, external :: dnrm2
 
-    muld2h = reshape(&
-             (/1,2,3,4,5,6,7,8, &
-               2,1,4,3,6,5,8,7, &
-               3,4,1,2,7,8,5,6, &
-               4,3,2,1,8,7,6,5, &
-               5,6,7,8,1,2,3,4, &
-               6,5,8,7,2,1,4,3, &
-               7,8,5,6,3,4,1,2, &
-               8,7,6,5,4,3,2,1/), (/8, 8/))
-
     h2 = 1d0
     fc = 0d0
     norbt = 6
     nasht = 2
 
     call fsomu(1, 1, h2, fc, udv, wrk, 10)
+    @assertEqual(maxval(abs(fc)), 0d0)
+end subroutine
+
+@test
+subroutine test_fi_zero_input(this)
+    use infind_mod, only: ismo
+    use inforb_mod, only: norbt, nasht, muld2h, nsym
+    use wrkrsp_mod, only: ksymop
+    use rsphso_mod, only: fsomu
+    class(type_rsphso), intent(inout) :: this
+    double precision h2(6, 6)
+    double precision fc(6, 6)
+    double precision udv(2, 2)
+    double precision wrk(10)
+    double precision, external :: dnrm2
+
+
+    h2 = 0d0
+    fc = 0d0
+    norbt = 6
+    nasht = 2
+    ksymop = 1
+
+    nsym = 1
+    ismo(1:norbt) = 1
+
+    call fsomu(2, 1, h2, fc, udv, wrk, 10)
     @assertEqual(maxval(abs(fc)), 0d0)
 end subroutine
 

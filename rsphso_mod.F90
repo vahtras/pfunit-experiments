@@ -4,6 +4,10 @@ contains
 #include "rsphso.F"
 end module rsphso_mod
 
+module wrkrsp_mod
+#include "wrkrsp.h"
+end module wrkrsp_mod
+
 subroutine memget()
 end
 subroutine memrel()
