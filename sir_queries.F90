@@ -5,6 +5,10 @@ module infind_mod
 #include "orbtypdef.h"
 end module infind_mod
 
+module inforb_mod
+#include "inforb.h"
+end module inforb_mod
+
 module orbital_queries
 implicit none
 
