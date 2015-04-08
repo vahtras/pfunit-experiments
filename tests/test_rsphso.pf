@@ -50,7 +50,6 @@ subroutine test_ceqd_gives_naught(this)
     use inforb_mod, only: norbt, nasht, muld2h
     use rsphso_mod, only: fsomu
     class(type_rsphso), intent(inout) :: this
-    double precision, external :: dnrm2
 
     this%h2 = 1d0
     this%fc = 0d0
@@ -65,7 +64,6 @@ subroutine test_fi_zero_input(this)
     use inforb_mod, only: norbt, nasht, muld2h, nsym
     use rsphso_mod, only: fsomu
     class(type_rsphso), intent(inout) :: this
-    double precision, external :: dnrm2
 
 
     this%h2 = 0d0
