@@ -4,15 +4,21 @@ implicit none
 
 @testcase
     type, extends(TestCase) :: type_rsphso
+        double precision, allocatable, dimension(:, :) :: h2
+        double precision, allocatable, dimension(:, :) :: fc
+        double precision, allocatable, dimension(:, :) :: udv
+        double precision, allocatable, dimension(:) :: wrk
     contains
-        procedure :: setUp
+        procedure :: setUp, tearDown
     end type
 
 contains
 
 subroutine setUp(this)
-    use inforb_mod, only: muld2h
+    use inforb_mod, only: muld2h, norbt, nasht
+    use wrkrsp_mod, only: ksymop
     class(type_rsphso), intent(inout) :: this
+
     muld2h = reshape(&
              (/1,2,3,4,5,6,7,8, &
                2,1,4,3,6,5,8,7, &
@@ -22,53 +28,54 @@ subroutine setUp(this)
                6,5,8,7,2,1,4,3, &
                7,8,5,6,3,4,1,2, &
                8,7,6,5,4,3,2,1/), (/8, 8/))
+    norbt = 6
+    nasht = 2
+    ksymop = 1
+
+    allocate(this%h2(norbt, norbt))
+    allocate(this%fc(norbt, norbt))
+    allocate(this%wrk(10))
 end subroutine setUp
+
+subroutine tearDown(this)
+    class(type_rsphso), intent(inout) :: this
+    deallocate(this%h2)
+    deallocate(this%fc)
+    deallocate(this%wrk)
+end subroutine tearDown
+
 
 @test
 subroutine test_ceqd_gives_naught(this)
     use inforb_mod, only: norbt, nasht, muld2h
     use rsphso_mod, only: fsomu
     class(type_rsphso), intent(inout) :: this
-    double precision h2(6, 6)
-    double precision fc(6, 6)
-    double precision udv(2, 2)
-    double precision wrk(10)
     double precision, external :: dnrm2
 
-    h2 = 1d0
-    fc = 0d0
-    norbt = 6
-    nasht = 2
+    this%h2 = 1d0
+    this%fc = 0d0
 
-    call fsomu(1, 1, h2, fc, udv, wrk, 10)
-    @assertEqual(maxval(abs(fc)), 0d0)
+    call fsomu(1, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fc)), 0d0)
 end subroutine
 
 @test
 subroutine test_fi_zero_input(this)
     use infind_mod, only: ismo
     use inforb_mod, only: norbt, nasht, muld2h, nsym
-    use wrkrsp_mod, only: ksymop
     use rsphso_mod, only: fsomu
     class(type_rsphso), intent(inout) :: this
-    double precision h2(6, 6)
-    double precision fc(6, 6)
-    double precision udv(2, 2)
-    double precision wrk(10)
     double precision, external :: dnrm2
 
 
-    h2 = 0d0
-    fc = 0d0
-    norbt = 6
-    nasht = 2
-    ksymop = 1
+    this%h2 = 0d0
+    this%fc = 0d0
 
     nsym = 1
     ismo(1:norbt) = 1
 
-    call fsomu(2, 1, h2, fc, udv, wrk, 10)
-    @assertEqual(maxval(abs(fc)), 0d0)
+    call fsomu(2, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fc)), 0d0)
 end subroutine
 
 end module test_fsomu
