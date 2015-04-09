@@ -75,7 +75,7 @@ subroutine test_ceqd_gives_naught(this)
     this%h2 = 1d0
     this%fc = 0d0
 
-    call append_to_fi(1, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    call append_to_fi(1, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(maxval(abs(this%fc)), 0d0)
 end subroutine
 
@@ -89,7 +89,7 @@ subroutine test_fi_zero_input(this)
     this%fc = 0d0
 
 
-    call append_to_fi(2, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    call append_to_fi(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(maxval(abs(this%fc)), 0d0)
 end subroutine
 
@@ -105,7 +105,7 @@ subroutine test_fi_coulomb(this)
     ref_fc(2, 1) = 2d0
     ref_fc(1, 2) = -2d0
 
-    call append_to_fi_c(2, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    call append_to_fi_c(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(0d0, maxval(abs(this%fc - ref_fc)))
 end subroutine
 
@@ -122,7 +122,7 @@ subroutine test_fi_exchange(this)
     ref_fc(:, 2) = 3
     ref_fc(2, 2) = 0
 
-    call append_to_fi_x(2, 1, this%h2, this%fc, this%udv, this%wrk, size(this%wrk))
+    call append_to_fi_x(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(0d0, maxval(abs(this%fc - ref_fc)))
 end subroutine
 
