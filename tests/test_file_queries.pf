@@ -1,0 +1,56 @@
+module test_file
+use pfunit_mod
+use file_queries
+
+@testcase
+    type, extends(TestCase) :: type_file
+        double precision rec(10)
+        double precision ref(10)
+    contains
+        procedure :: setUp
+    end type
+
+contains
+
+    subroutine setUp(this)
+        class(type_file), intent(inout):: this
+        this%ref = (/0, 1, 2, 3, 4, 5, 6, 7, 8, 9/)
+        open(1, file='sample.dat', form='unformatted')
+        write(1) '********                THIS_LAB'
+        write(1) this%ref
+        close(1)
+    end subroutine setUp
+
+    subroutine tearDown(this)
+        class(type_file), intent(inout):: this
+        open(1, file='sample.dat', form='unformatted')
+        close(1, status='delete')
+    end subroutine tearDown
+
+    @test
+    subroutine test_non_existing(this)
+        class(type_file), intent(inout):: this
+        @assertFalse(found_and_read(this%rec, 10, 'ANYLABEL', 'NO_SUCH_FILE'))
+    end subroutine
+
+    @test
+    subroutine test_existing_without_label(this)
+        class(type_file), intent(inout):: this
+        @assertFalse(found_and_read(this%rec, 10, 'WRONGLAB', 'sample.dat'))
+    end subroutine
+
+    @test
+    subroutine test_record_too_long(this)
+        class(type_file), intent(inout):: this
+        double precision long(20)
+        @assertFalse(found_and_read(long, 20, 'THIS_LAB', 'sample.dat'))
+    end subroutine
+
+    @test
+    subroutine test_record_ok(this)
+        class(type_file), intent(inout):: this
+        @assertTrue(found_and_read(this%rec, 10, 'THIS_LAB', 'sample.dat'))
+    end subroutine
+
+
+end module test_file
