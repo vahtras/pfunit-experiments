@@ -6,7 +6,9 @@ implicit none
     type, extends(TestCase) :: type_rsphso
         double precision, allocatable, dimension(:, :) :: h2
         double precision, allocatable, dimension(:, :) :: fc
+        double precision, allocatable, dimension(:, :) :: q
         double precision, allocatable, dimension(:, :) :: udv
+        double precision, allocatable, dimension(:, :, :, :) :: pv
         double precision, allocatable, dimension(:) :: wrk
     contains
         procedure :: setUp, tearDown
@@ -17,7 +19,7 @@ contains
 subroutine setUp(this)
     use inforb_mod, only: muld2h, nsym, norbt, nisht, nasht, &
         iorb, norb, nash, nocc
-    use infind_mod, only: ismo, isx, iobtyp
+    use infind_mod, only: ismo, isx, isw, iobtyp
     use wrkrsp_mod, only: ksymop
     class(type_rsphso), intent(inout) :: this
     
@@ -46,6 +48,7 @@ subroutine setUp(this)
     ismo(1:norbt) = 1
     do i=1,norbt
         isx(i) = i
+        isw(i) = i - nisht
     end do
     iobtyp(1) = 2
     iobtyp(2:3) = 3
@@ -54,15 +57,21 @@ subroutine setUp(this)
 ! wrkrsp.h
     ksymop = 1
 
-    allocate(this%h2(norbt, norbt))
-    allocate(this%fc(norbt, norbt))
+    allocate(this%h2(norbt, norbt)); this%h2 = 0
+    allocate(this%fc(norbt, norbt)); this%fc = 0
+    allocate(this%q(norbt, nasht));  this%q = 0
+    allocate(this%udv(nasht, nasht)); this%udv = 0
+    allocate(this%pv(nasht, nasht, nasht, nasht)); this%pv = 0
     allocate(this%wrk(10))
+
 end subroutine setUp
 
 subroutine tearDown(this)
     class(type_rsphso), intent(inout) :: this
     deallocate(this%h2)
     deallocate(this%fc)
+    deallocate(this%udv)
+    deallocate(this%pv)
     deallocate(this%wrk)
 end subroutine tearDown
 
@@ -124,6 +133,20 @@ subroutine test_fi_exchange(this)
 
     call append_to_fi_x(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(0d0, maxval(abs(this%fc - ref_fc)))
+end subroutine
+
+@test
+subroutine test_q1_update(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht)
+    ref_q = 0
+
+    call update_q1(3, 2, this%q, this%h2, this%pv, this%wrk, size(this%wrk))
+    @assertEqual(ref_q, this%q)
+
 end subroutine
 
 end module test_so_fock
