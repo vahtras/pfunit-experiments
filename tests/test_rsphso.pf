@@ -17,7 +17,7 @@ implicit none
 contains
 
 subroutine setUp(this)
-    use inforb_mod, only: muld2h, nsym, norbt, nisht, nasht, &
+    use inforb_mod, only: muld2h, nsym, norbt, nisht, nasht, n2ashx, &
         iorb, norb, nish, iash ,nash, nocc
     use infind_mod, only: ismo, isx, isw, iobtyp
     use wrkrsp_mod, only: ksymop
@@ -39,6 +39,7 @@ subroutine setUp(this)
     norbt = 6
     nisht = 1
     nasht = 2
+    n2ashx = 4
     iorb(1) = 0
     norb(1) = 6
     nish(1) = 1
@@ -138,7 +139,181 @@ subroutine test_fi_exchange(this)
 end subroutine
 
 @test
-subroutine test_q1_update(this)
+subroutine test_q1_update_xx21(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 2, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_2321(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=2, ca=1, d=1, qa=1, x=2, xa=1, y=3, ya=2
+
+    double precision ref_q(norbt, nasht) 
+    ref_q = 0
+
+    this%h2(x,y) = 2
+    this%pv(xa,ya,qa,ca) = 3
+    ref_q(d,qa) = -6
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx31(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+    
+    integer :: c=3, d=1
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx31(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, ca=2, d=1, qa=1, x=2, xa=1, y=3, ya=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x,y) = 2
+    this%pv(xa,ya,qa,ca) = 3
+    ref_q(d,qa) = -6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx41(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 4, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx41(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=1
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx51(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 5, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx51(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=1
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx61(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 6, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx61(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=1
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_32(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -183,6 +358,328 @@ subroutine test_q1_update_1232b(this)
     ref_q(1, 1) = -63
 
     call update_q1(this%q, this%h2, 3, 2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx32(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, d=2, ca=2, da=1
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    this%pv(xa, ya, qa, ca) = 4
+    ref_q(c, qa) = 6
+    ref_q(d, qa) = -8
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx42(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 4, 2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx42(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=2, da=1
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+@test
+subroutine test_q1_update_xx52(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 5, 2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx52(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=2, da=1
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+
+@test
+subroutine test_q1_update_xx62(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 6, 2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx62(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=2, da=1
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_xx43(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 4, 3, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx43(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=3, da=2
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q1_update_xx53(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 5, 3, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx53(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=3, da=2
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q1_update_xx63(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 6, 3, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q3_update_xx63(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=3, da=2
+    integer :: x=3, y=2, xa=2, ya=1, qa=2
+
+    double precision, dimension(norbt, nasht) :: ref_q
+    ref_q = 0
+
+    this%h2(x, y) = 2
+    this%pv(xa, ya, qa, da) = 3
+    ref_q(c, qa) = 6
+
+    call update_q3(this%q, this%h2, c, d, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+
+subroutine test_q1_update_xx54(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 5, 4, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q3_update_xx54(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q3(this%q, this%h2, 5, 4, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q1_update_xx64(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 6, 4, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q3_update_xx64(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q3(this%q, this%h2, 6, 4, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q1_update_xx65(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q1(this%q, this%h2, 6, 5, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_q3_update_xx65(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q3
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call random_number(this%h2)
+    call random_number(this%pv)
+    call update_q3(this%q, this%h2, 6, 5, this%pv)
     @assertEqual(ref_q, this%q)
 
 end subroutine

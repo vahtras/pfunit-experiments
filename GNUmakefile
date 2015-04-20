@@ -16,6 +16,7 @@ include $(PFUNIT)/include/base.mk
 EXE = tests.x
 LIBS = -L$(PFUNIT)/lib -lpfunit  -llapack -lblas
 OBJDIR = $(HOME)/dev/dalton/build/master-refactor-rsphso/CMakeFiles/dalton.dir/DALTON
+LIBS += $(OBJDIR)/sirius/sirgp.F.o
 LIBS += $(OBJDIR)/gp/gptrygve.F.o
 LIBS += $(OBJDIR)/gp/gphjj.F.o
 LIBS += $(OBJDIR)/gp/qpack.F.o

@@ -46,3 +46,11 @@ subroutine rspprc()
 end
 subroutine qrgp()
 end
+
+!include sirgp
+subroutine fckden()
+end
+subroutine formsup()
+end
+subroutine phpget()
+end
