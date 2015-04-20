@@ -18,7 +18,7 @@ contains
 
 subroutine setUp(this)
     use inforb_mod, only: muld2h, nsym, norbt, nisht, nasht, &
-        iorb, norb, nash, nocc
+        iorb, norb, nish, iash ,nash, nocc
     use infind_mod, only: ismo, isx, isw, iobtyp
     use wrkrsp_mod, only: ksymop
     class(type_rsphso), intent(inout) :: this
@@ -41,6 +41,8 @@ subroutine setUp(this)
     nasht = 2
     iorb(1) = 0
     norb(1) = 6
+    nish(1) = 1
+    iash(1) = 0
     nash(1) = 2
     nocc(1) = 3
 
@@ -48,7 +50,7 @@ subroutine setUp(this)
     ismo(1:norbt) = 1
     do i=1,norbt
         isx(i) = i
-        isw(i) = i - nisht
+        isw(i) = i
     end do
     iobtyp(1) = 2
     iobtyp(2:3) = 3
@@ -144,7 +146,43 @@ subroutine test_q1_update(this)
     double precision ref_q(norbt, nasht)
     ref_q = 0
 
-    call update_q1(3, 2, this%q, this%h2, this%pv, this%wrk, size(this%wrk))
+    call update_q1(3, 2, this%q, this%h2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_1232a(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+    ! q(1,2) = (12|32) d(1,1,2,1)
+
+    this%h2(1, 2) = 7
+    this%pv(1, 1, 2, 1) = 9
+    ref_q(1, 1) = 63
+
+    call update_q1(3, 2, this%q, this%h2, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_q1_update_1232b(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+    ! q(1,2) = (12|32) d(1,1,2,1)
+
+    this%h2(1, 2) = 7
+    this%pv(1, 1, 1, 2) = 9
+    ref_q(1, 1) = -63
+
+    call update_q1(3, 2, this%q, this%h2, this%pv)
     @assertEqual(ref_q, this%q)
 
 end subroutine
