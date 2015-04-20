@@ -146,7 +146,7 @@ subroutine test_q1_update(this)
     double precision ref_q(norbt, nasht)
     ref_q = 0
 
-    call update_q1(3, 2, this%q, this%h2, this%pv)
+    call update_q1(this%q, this%h2, 3, 2, this%pv)
     @assertEqual(ref_q, this%q)
 
 end subroutine
@@ -164,7 +164,7 @@ subroutine test_q1_update_1232a(this)
     this%pv(1, 1, 2, 1) = 9
     ref_q(1, 1) = 63
 
-    call update_q1(3, 2, this%q, this%h2, this%pv)
+    call update_q1(this%q, this%h2, 3, 2, this%pv)
     @assertEqual(ref_q, this%q)
 
 end subroutine
@@ -182,7 +182,7 @@ subroutine test_q1_update_1232b(this)
     this%pv(1, 1, 1, 2) = 9
     ref_q(1, 1) = -63
 
-    call update_q1(3, 2, this%q, this%h2, this%pv)
+    call update_q1(this%q, this%h2, 3, 2, this%pv)
     @assertEqual(ref_q, this%q)
 
 end subroutine
