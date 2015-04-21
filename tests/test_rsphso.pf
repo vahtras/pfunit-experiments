@@ -19,7 +19,7 @@ contains
 subroutine setUp(this)
     use inforb_mod, only: muld2h, nsym, norbt, nisht, nasht, n2ashx, &
         iorb, norb, nish, iash ,nash, nocc
-    use infind_mod, only: ismo, isx, isw, iobtyp
+    use infind_mod, only: ismo, isx, isw, iobtyp, ich
     use wrkrsp_mod, only: ksymop
     class(type_rsphso), intent(inout) :: this
     
@@ -53,6 +53,10 @@ subroutine setUp(this)
         isx(i) = i
         isw(i) = i
     end do
+    ich(1) = - 1
+    ich(2) =  1
+    ich(3) =  2
+    ich(4:6) = 0
     iobtyp(1) = 2
     iobtyp(2:3) = 3
     iobtyp(4:6) = 4
@@ -681,6 +685,17 @@ subroutine test_q3_update_xx65(this)
     call random_number(this%pv)
     call update_q3(this%q, this%h2, 6, 5, this%pv)
     @assertEqual(ref_q, this%q)
+
+end subroutine
+
+subroutine test_getac1(this)
+    use inforb_mod, only: nasht
+    class(type_rsphso), intent(inout) :: this
+
+    double precision h2x(nasht, nasht)
+    call random_number(this%h2)
+    call getac1(this%h2, h2x)
+    @assertEqual(this%h2(2:3, 2:3), h2x)
 
 end subroutine
 
