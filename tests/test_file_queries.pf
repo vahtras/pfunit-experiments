@@ -52,5 +52,13 @@ contains
         @assertTrue(found_and_read(this%rec, 10, 'THIS_LAB', 'sample.dat'))
     end subroutine
 
+    @test
+    subroutine test_save_with_label(this)
+        class(type_file), intent(inout):: this
+        call save_rec_with_label(this%ref, 10, '_NEW_LAB', 'new.dat')
+        @assertTrue(found_and_read(this%rec, 10, '_NEW_LAB', 'new.dat'))
+        @assertEqual(this%ref, this%rec)
+    end subroutine
+
 
 end module test_file

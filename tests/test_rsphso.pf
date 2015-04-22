@@ -6,6 +6,7 @@ implicit none
     type, extends(TestCase) :: type_rsphso
         double precision, allocatable, dimension(:, :) :: h2
         double precision, allocatable, dimension(:, :) :: fc
+        double precision, allocatable, dimension(:, :) :: fv
         double precision, allocatable, dimension(:, :) :: q
         double precision, allocatable, dimension(:, :) :: udv
         double precision, allocatable, dimension(:, :, :, :) :: pv
@@ -66,6 +67,7 @@ subroutine setUp(this)
 
     allocate(this%h2(norbt, norbt)); this%h2 = 0
     allocate(this%fc(norbt, norbt)); this%fc = 0
+    allocate(this%fv(norbt, norbt)); this%fv = 0
     allocate(this%q(norbt, nasht));  this%q = 0
     allocate(this%udv(nasht, nasht)); this%udv = 0
     allocate(this%pv(nasht, nasht, nasht, nasht)); this%pv = 0
@@ -77,6 +79,7 @@ subroutine tearDown(this)
     class(type_rsphso), intent(inout) :: this
     deallocate(this%h2)
     deallocate(this%fc)
+    deallocate(this%fv)
     deallocate(this%udv)
     deallocate(this%pv)
     deallocate(this%wrk)
@@ -107,6 +110,20 @@ subroutine test_fi_zero_input(this)
 
     call append_to_fi(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
     @assertEqual(maxval(abs(this%fc)), 0d0)
+end subroutine
+
+@test
+subroutine test_fa_zero_input(this)
+    use rsphso_mod, only: append_to_fa
+    class(type_rsphso), intent(inout) :: this
+
+
+    this%h2 = 0d0
+    this%fv = 0d0
+
+
+    call append_to_fa(2, 1, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fv)), 0d0)
 end subroutine
 
 @test
@@ -568,20 +585,6 @@ subroutine test_q3_update_xx53(this)
 
 end subroutine
 
-subroutine test_q1_update_xx63(this)
-    use inforb_mod, only: norbt, nasht
-    use rsphso_mod, only: update_q1
-    class(type_rsphso), intent(inout) :: this
-
-    double precision ref_q(norbt, nasht); ref_q = 0
-
-    call random_number(this%h2)
-    call random_number(this%pv)
-    call update_q1(this%q, this%h2, 6, 3, this%pv)
-    @assertEqual(ref_q, this%q)
-
-end subroutine
-
 @test
 subroutine test_q3_update_xx63(this)
     use inforb_mod, only: norbt, nasht
@@ -604,6 +607,7 @@ subroutine test_q3_update_xx63(this)
 end subroutine
 
 
+@test
 subroutine test_q1_update_xx54(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
@@ -618,6 +622,7 @@ subroutine test_q1_update_xx54(this)
 
 end subroutine
 
+@test
 subroutine test_q3_update_xx54(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
@@ -632,6 +637,7 @@ subroutine test_q3_update_xx54(this)
 
 end subroutine
 
+@test
 subroutine test_q1_update_xx64(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
@@ -646,6 +652,7 @@ subroutine test_q1_update_xx64(this)
 
 end subroutine
 
+@test
 subroutine test_q3_update_xx64(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
@@ -660,6 +667,7 @@ subroutine test_q3_update_xx64(this)
 
 end subroutine
 
+@test
 subroutine test_q1_update_xx65(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
@@ -674,6 +682,7 @@ subroutine test_q1_update_xx65(this)
 
 end subroutine
 
+@test
 subroutine test_q3_update_xx65(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
@@ -688,6 +697,7 @@ subroutine test_q3_update_xx65(this)
 
 end subroutine
 
+@test
 subroutine test_getac1(this)
     use inforb_mod, only: nasht
     class(type_rsphso), intent(inout) :: this
@@ -698,6 +708,18 @@ subroutine test_getac1(this)
     @assertEqual(this%h2(2:3, 2:3), h2x)
 
 end subroutine
+
+@test
+subroutine test_type(this)
+    use inforb_mod, only: nasht, norbt
+    use focktype_mod
+    class(type_rsphso), intent(inout) :: this
+    type(mofock):: focks
+    
+    call focks%allocate()
+    @assertEqual(shape(focks%fi), (/norbt, norbt/))
+    call focks%deallocate()
+end subroutine    
 
 end module test_so_fock
 

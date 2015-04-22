@@ -25,11 +25,29 @@ contains
         else
             ok = .false.
         end if
-        call gpclose(lutmp, 'keep')
+        call gpclose(lutmp, 'KEEP')
     end if
 99  continue
     end function
 
+    subroutine save_rec_with_label(x, n, label, filename)
+    double precision x(n)
+    integer n
+    character(*) filename
+    character(8) label
+
+    integer lutmp
+    lutmp = -1
+    call gpopen(lutmp, filename, 'unknown','','unformatted',0,.false.)
+    print *,'lutmp', lutmp, filename
+    rewind lutmp
+    call newlab(label, lutmp, 0)
+    print *,'newlab'
+    write(lutmp) x
+    call gpclose(lutmp, 'KEEP')
+
+    end subroutine
+    
 
 end module file_queries
     
