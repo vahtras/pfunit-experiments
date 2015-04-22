@@ -2,6 +2,10 @@ module wrkrsp_mod
 #include "wrkrsp.h"
 end module wrkrsp_mod
 
+module infrsp_mod
+#include "infrsp.h"
+end module  infrsp_mod
+
 module infhyp_mod
 #include "rspprp.h"
 #include "infhyp.h"

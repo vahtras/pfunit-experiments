@@ -39,10 +39,8 @@ contains
     integer lutmp
     lutmp = -1
     call gpopen(lutmp, filename, 'unknown','','unformatted',0,.false.)
-    print *,'lutmp', lutmp, filename
     rewind lutmp
     call newlab(label, lutmp, 0)
-    print *,'newlab'
     write(lutmp) x
     call gpclose(lutmp, 'KEEP')
 
