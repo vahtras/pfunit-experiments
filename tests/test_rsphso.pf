@@ -5,8 +5,8 @@ implicit none
 @testcase
     type, extends(TestCase) :: type_rsphso
         double precision, allocatable, dimension(:, :) :: h2
-        double precision, allocatable, dimension(:, :) :: fc
-        double precision, allocatable, dimension(:, :) :: fv
+        double precision, allocatable, dimension(:, :) :: fi
+        double precision, allocatable, dimension(:, :) :: fa
         double precision, allocatable, dimension(:, :) :: q
         double precision, allocatable, dimension(:, :) :: udv
         double precision, allocatable, dimension(:, :, :, :) :: pv
@@ -66,8 +66,8 @@ subroutine setUp(this)
     ksymop = 1
 
     allocate(this%h2(norbt, norbt)); this%h2 = 0
-    allocate(this%fc(norbt, norbt)); this%fc = 0
-    allocate(this%fv(norbt, norbt)); this%fv = 0
+    allocate(this%fi(norbt, norbt)); this%fi = 0
+    allocate(this%fa(norbt, norbt)); this%fa = 0
     allocate(this%q(norbt, nasht));  this%q = 0
     allocate(this%udv(nasht, nasht)); this%udv = 0
     allocate(this%pv(nasht, nasht, nasht, nasht)); this%pv = 0
@@ -78,52 +78,45 @@ end subroutine setUp
 subroutine tearDown(this)
     class(type_rsphso), intent(inout) :: this
     deallocate(this%h2)
-    deallocate(this%fc)
-    deallocate(this%fv)
+    deallocate(this%fi)
+    deallocate(this%fa)
     deallocate(this%udv)
     deallocate(this%pv)
     deallocate(this%wrk)
 end subroutine tearDown
 
-
-@test
-subroutine test_ceqd_gives_naught(this)
-    use rsphso_mod, only: append_to_fi
-    class(type_rsphso), intent(inout) :: this
-
-    this%h2 = 1d0
-    this%fc = 0d0
-
-    call append_to_fi(1, 1, this%h2, this%fc, this%wrk, size(this%wrk))
-    @assertEqual(maxval(abs(this%fc)), 0d0)
+subroutine out(f)
+    use inforb_mod, only: norbt
+    double precision f(norbt,norbt)
+    call output(f,1,norbt,1,norbt,norbt,norbt,1,6)
 end subroutine
 
 @test
-subroutine test_fi_zero_input(this)
-    use rsphso_mod, only: append_to_fi
+subroutine test_fi_c_zero_input(this)
+    use rsphso_mod, only: append_to_fi_c
     class(type_rsphso), intent(inout) :: this
 
 
     this%h2 = 0d0
-    this%fc = 0d0
+    this%fa = 0d0
 
 
-    call append_to_fi(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
-    @assertEqual(maxval(abs(this%fc)), 0d0)
+    call append_to_fi_c(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fi)), 0d0)
 end subroutine
 
 @test
-subroutine test_fa_zero_input(this)
-    use rsphso_mod, only: append_to_fa
+subroutine test_fi_x_zero_input(this)
+    use rsphso_mod, only: append_to_fi_x
     class(type_rsphso), intent(inout) :: this
 
 
     this%h2 = 0d0
-    this%fv = 0d0
+    this%fa = 0d0
 
 
-    call append_to_fa(2, 1, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
-    @assertEqual(maxval(abs(this%fv)), 0d0)
+    call append_to_fi_x(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fi)), 0d0)
 end subroutine
 
 @test
@@ -133,48 +126,109 @@ subroutine test_fa_c_zero_input(this)
 
 
     this%h2 = 0d0
-    this%fv = 0d0
+    this%fa = 0d0
 
 
-    call append_to_fa_c(2, 1, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
-    @assertEqual(maxval(abs(this%fv)), 0d0)
+    call append_to_fa_c(2, 1, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(maxval(abs(this%fa)), 0d0)
 end subroutine
 
 @test
-subroutine test_fi_coulomb(this)
+subroutine test_fa_x_zero_input(this)
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+
+    this%h2 = 0d0
+    this%fa = 0d0
+
+
+    @assertEqual(maxval(abs(this%fa)), 0d0)
+    call append_to_fa_x(2, 1, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+end subroutine
+
+
+@test
+subroutine test_append_to_q1_zero_input(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call update_q1(this%q, this%h2, 2, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_append_to_q3_zero_input(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: update_q1
+    class(type_rsphso), intent(inout) :: this
+
+    double precision ref_q(norbt, nasht); ref_q = 0
+
+    call update_q1(this%q, this%h2, 2, 1, this%pv)
+    @assertEqual(ref_q, this%q)
+
+end subroutine
+
+@test
+subroutine test_append_to_fi_c_xx21(this)
     use rsphso_mod, only: append_to_fi_c
     class(type_rsphso), intent(inout) :: this
     double precision:: ref_fc(6, 6) = 0d0
 
 
     this%h2 = 1d0
-    this%fc = 0d0
+    this%fi = 0d0
     ref_fc(2, 1) = 2d0
     ref_fc(1, 2) = -2d0
 
-    call append_to_fi_c(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
-    @assertEqual(0d0, maxval(abs(this%fc - ref_fc)))
+    call append_to_fi_c(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    @assertEqual(0d0, maxval(abs(this%fi - ref_fc)))
 end subroutine
 
 @test
-subroutine test_fi_exchange(this)
+subroutine test_append_to_fi_x_xx21(this)
     use rsphso_mod, only: append_to_fi_x
     class(type_rsphso), intent(inout) :: this
     double precision:: ref_fc(6, 6) = 0d0
 
 
     this%h2 = 1d0
-    this%fc = 0d0
+    this%fi = 0d0
     ref_fc(2, :) = -3
     ref_fc(:, 2) = 3
     ref_fc(2, 2) = 0
 
-    call append_to_fi_x(2, 1, this%h2, this%fc, this%wrk, size(this%wrk))
-    @assertEqual(0d0, maxval(abs(this%fc - ref_fc)))
+    call append_to_fi_x(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    @assertEqual(0d0, maxval(abs(this%fi - ref_fc)))
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx21(this)
+subroutine test_append_to_fa_c_xx21s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=2, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+subroutine test_append_to_fa_c_xx21t(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -187,16 +241,37 @@ subroutine test_fa_c_update_xx21(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx21(this)
+subroutine test_append_to_fa_x_xx21(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=2, d=1, ca=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, d) = -1.5*this%h2(:, c)
+    ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx21(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -211,7 +286,7 @@ subroutine test_q1_update_xx21(this)
 end subroutine
 
 @test
-subroutine test_q3_update_2321(this)
+subroutine test_append_to_q3_2321(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -230,7 +305,27 @@ subroutine test_q3_update_2321(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx31(this)
+subroutine test_append_to_fa_c_xx31s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+subroutine test_append_to_fa_c_xx31t(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -243,16 +338,36 @@ subroutine test_fa_c_update_xx31(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_x_xx31(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, d=1, ca=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, d) = -1.5*this%h2(:, c)
+    ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx31(this)
+subroutine test_append_to_q1_xx31(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -270,7 +385,7 @@ subroutine test_q1_update_xx31(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx31(this)
+subroutine test_append_to_q3_xx31(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -290,7 +405,28 @@ subroutine test_q3_update_xx31(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx41(this)
+subroutine test_append_to_fa_c_xx41s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx41t(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -303,16 +439,36 @@ subroutine test_fa_c_update_xx41(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx41(this)
+subroutine test_append_to_fa_x_xx41(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    !ref_fa(:, d) = -1.5*this%h2(:, c)
+    !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_q1_xx41(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -327,7 +483,7 @@ subroutine test_q1_update_xx41(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx41(this)
+subroutine test_append_to_q3_xx41(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -346,7 +502,28 @@ subroutine test_q3_update_xx41(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx51(this)
+subroutine test_append_to_fa_c_xx51s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx51(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -359,16 +536,37 @@ subroutine test_fa_c_update_xx51(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx51(this)
+subroutine test_append_to_fa_x_xx51(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    !ref_fa(:, d) = -1.5*this%h2(:, c)
+    !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx51(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -383,7 +581,7 @@ subroutine test_q1_update_xx51(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx51(this)
+subroutine test_append_to_q3_xx51(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -402,7 +600,7 @@ subroutine test_q3_update_xx51(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx61(this)
+subroutine test_append_to_fa_c_xx61(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -415,16 +613,58 @@ subroutine test_fa_c_update_xx61(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx61s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx61(this)
+subroutine test_append_to_fa_x_xx61(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=1
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    !ref_fa(:, d) = -1.5*this%h2(:, c)
+    !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx61(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -439,7 +679,7 @@ subroutine test_q1_update_xx61(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx61(this)
+subroutine test_append_to_q3_xx61(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -458,7 +698,7 @@ subroutine test_q3_update_xx61(this)
 end subroutine
 
 @test
-subroutine test_q1_update_32(this)
+subroutine test_append_to_q1_32(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -472,7 +712,7 @@ subroutine test_q1_update_32(this)
 end subroutine
 
 @test
-subroutine test_q1_update_1232a(this)
+subroutine test_append_to_q1_1232a(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -490,7 +730,7 @@ subroutine test_q1_update_1232a(this)
 end subroutine
 
 @test
-subroutine test_q1_update_1232b(this)
+subroutine test_append_to_q1_1232b(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -508,7 +748,7 @@ subroutine test_q1_update_1232b(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx32(this)
+subroutine test_append_to_fa_c_xx32(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -521,16 +761,60 @@ subroutine test_fa_c_update_xx32(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx32s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q3_update_xx32(this)
+subroutine test_append_to_fa_x_xx32(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=3, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, d) =  ref_fa(:,d) - 1.5*this%h2(:, c)
+    ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q3_xx32(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -553,7 +837,28 @@ subroutine test_q3_update_xx32(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx42(this)
+subroutine test_append_to_fa_c_xx42s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx42(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -566,16 +871,38 @@ subroutine test_fa_c_update_xx42(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx42(this)
+subroutine test_append_to_fa_x_xx42(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx42(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -590,7 +917,7 @@ subroutine test_q1_update_xx42(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx42(this)
+subroutine test_append_to_q3_xx42(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -611,7 +938,28 @@ subroutine test_q3_update_xx42(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx52(this)
+subroutine test_append_to_fa_c_xx52s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx52(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -624,16 +972,38 @@ subroutine test_fa_c_update_xx52(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx52(this)
+subroutine test_append_to_fa_x_xx52(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx52(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -648,7 +1018,7 @@ subroutine test_q1_update_xx52(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx52(this)
+subroutine test_append_to_q3_xx52(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -669,7 +1039,28 @@ subroutine test_q3_update_xx52(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx62(this)
+subroutine test_append_to_fa_c_xx62s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx62(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -682,17 +1073,38 @@ subroutine test_fa_c_update_xx62(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
+@test
+subroutine test_append_to_fa_x_xx62(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
 
 @test
-subroutine test_q1_update_xx62(this)
+subroutine test_append_to_q1_xx62(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -707,7 +1119,7 @@ subroutine test_q1_update_xx62(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx62(this)
+subroutine test_append_to_q3_xx62(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -728,7 +1140,28 @@ subroutine test_q3_update_xx62(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx43(this)
+subroutine test_append_to_fa_c_xx43s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=3
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx43(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -741,16 +1174,38 @@ subroutine test_fa_c_update_xx43(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx43(this)
+subroutine test_append_to_fa_x_xx43(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=4, d=2
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx43(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -765,7 +1220,7 @@ subroutine test_q1_update_xx43(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx43(this)
+subroutine test_append_to_q3_xx43(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -786,7 +1241,28 @@ subroutine test_q3_update_xx43(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx53(this)
+subroutine test_append_to_fa_c_xx53s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=3
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx53(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -799,15 +1275,37 @@ subroutine test_fa_c_update_xx53(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
-subroutine test_q1_update_xx53(this)
+@test
+subroutine test_append_to_fa_x_xx53(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=3
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+subroutine test_append_to_q1_xx53(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -822,7 +1320,7 @@ subroutine test_q1_update_xx53(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx53(this)
+subroutine test_append_to_q3_xx53(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -843,7 +1341,28 @@ subroutine test_q3_update_xx53(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx63(this)
+subroutine test_append_to_fa_c_xx63s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=3
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(c, d) = 60
+    ref_fa(d, c) = -60
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx63(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -856,16 +1375,38 @@ subroutine test_fa_c_update_xx63(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q3_update_xx63(this)
+subroutine test_append_to_fa_x_xx63(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=3
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
+    ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
+    ref_fa(4:, 4:) = 0
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q3_xx63(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -885,9 +1426,27 @@ subroutine test_q3_update_xx63(this)
 
 end subroutine
 
+@test
+subroutine test_append_to_fa_x_xx54(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=5, d=4
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
 
 @test
-subroutine test_q1_update_xx54(this)
+subroutine test_append_to_q1_xx54(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -902,7 +1461,7 @@ subroutine test_q1_update_xx54(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx54(this)
+subroutine test_append_to_q3_xx54(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -917,7 +1476,26 @@ subroutine test_q3_update_xx54(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx64(this)
+subroutine test_append_to_fa_c_xx64s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=4
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx64(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -930,14 +1508,35 @@ subroutine test_fa_c_update_xx64(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
 
-    @assertEqual(ref_fa, this%fv)
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx64(this)
+subroutine test_append_to_fa_x_xx64(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=4
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    !ref_fa(:, d) = -1.5*this%h2(:, c)
+    !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx64(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -952,7 +1551,7 @@ subroutine test_q1_update_xx64(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx64(this)
+subroutine test_append_to_q3_xx64(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
@@ -967,7 +1566,25 @@ subroutine test_q3_update_xx64(this)
 end subroutine
 
 @test
-subroutine test_fa_c_update_xx65(this)
+subroutine test_append_to_fa_c_xx65s(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_c
+    use infrsp_mod, only: trplet
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=5
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
+    this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
+    trplet = .false.
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+@test
+subroutine test_append_to_fa_c_xx65(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: append_to_fa_c
     use infrsp_mod, only: trplet
@@ -980,13 +1597,34 @@ subroutine test_fa_c_update_xx65(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fv, this%udv, this%wrk, size(this%wrk))
-    @assertEqual(ref_fa, this%fv)
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    @assertEqual(ref_fa, this%fa)
 
 end subroutine
 
 @test
-subroutine test_q1_update_xx65(this)
+subroutine test_append_to_fa_x_xx65(this)
+    use inforb_mod, only: norbt, nasht
+    use rsphso_mod, only: append_to_fa_x
+    class(type_rsphso), intent(inout) :: this
+
+    integer :: c=6, d=5
+
+    double precision ref_fa(norbt, norbt); ref_fa = 0
+
+    call random_number(this%h2)
+    this%h2 = this%h2 + transpose(this%h2)
+    this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+
+    !ref_fa(:, d) = -1.5*this%h2(:, c)
+    !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
+    @assertEqual(ref_fa, this%fa)
+
+end subroutine
+
+@test
+subroutine test_append_to_q1_xx65(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q1
     class(type_rsphso), intent(inout) :: this
@@ -1001,7 +1639,7 @@ subroutine test_q1_update_xx65(this)
 end subroutine
 
 @test
-subroutine test_q3_update_xx65(this)
+subroutine test_append_to_q3_xx65(this)
     use inforb_mod, only: norbt, nasht
     use rsphso_mod, only: update_q3
     class(type_rsphso), intent(inout) :: this
