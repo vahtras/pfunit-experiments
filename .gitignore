@@ -5,4 +5,5 @@
 *.gcno
 *.gcda
 *.swp
+*.dat
 errors.err

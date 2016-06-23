@@ -101,7 +101,7 @@ subroutine test_fi_c_zero_input(this)
     this%fa = 0d0
 
 
-    call append_to_fi_c(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    call append_to_fi_c(2, 1, this%h2, this%fi)
     @assertEqual(maxval(abs(this%fi)), 0d0)
 end subroutine
 
@@ -115,7 +115,7 @@ subroutine test_fi_x_zero_input(this)
     this%fa = 0d0
 
 
-    call append_to_fi_x(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    call append_to_fi_x(2, 1, this%h2, this%fi)
     @assertEqual(maxval(abs(this%fi)), 0d0)
 end subroutine
 
@@ -129,7 +129,7 @@ subroutine test_fa_c_zero_input(this)
     this%fa = 0d0
 
 
-    call append_to_fa_c(2, 1, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(2, 1, this%h2, this%fa, this%udv)
     @assertEqual(maxval(abs(this%fa)), 0d0)
 end subroutine
 
@@ -144,7 +144,7 @@ subroutine test_fa_x_zero_input(this)
 
 
     @assertEqual(maxval(abs(this%fa)), 0d0)
-    call append_to_fa_x(2, 1, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(2, 1, this%h2, this%fa, this%udv)
 end subroutine
 
 
@@ -186,7 +186,7 @@ subroutine test_append_to_fi_c_xx21(this)
     ref_fc(2, 1) = 2d0
     ref_fc(1, 2) = -2d0
 
-    call append_to_fi_c(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    call append_to_fi_c(2, 1, this%h2, this%fi)
     @assertEqual(0d0, maxval(abs(this%fi - ref_fc)))
 end subroutine
 
@@ -203,7 +203,7 @@ subroutine test_append_to_fi_x_xx21(this)
     ref_fc(:, 2) = 3
     ref_fc(2, 2) = 0
 
-    call append_to_fi_x(2, 1, this%h2, this%fi, this%wrk, size(this%wrk))
+    call append_to_fi_x(2, 1, this%h2, this%fi)
     @assertEqual(0d0, maxval(abs(this%fi - ref_fc)))
 end subroutine
 
@@ -221,7 +221,7 @@ subroutine test_append_to_fa_c_xx21s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -241,7 +241,7 @@ subroutine test_append_to_fa_c_xx21t(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -262,7 +262,7 @@ subroutine test_append_to_fa_x_xx21(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, d) = -1.5*this%h2(:, c)
     ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -318,7 +318,7 @@ subroutine test_append_to_fa_c_xx31s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -338,7 +338,7 @@ subroutine test_append_to_fa_c_xx31t(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -358,7 +358,7 @@ subroutine test_append_to_fa_x_xx31(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, d) = -1.5*this%h2(:, c)
     ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -418,7 +418,7 @@ subroutine test_append_to_fa_c_xx41s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -439,7 +439,7 @@ subroutine test_append_to_fa_c_xx41t(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -460,7 +460,7 @@ subroutine test_append_to_fa_x_xx41(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     !ref_fa(:, d) = -1.5*this%h2(:, c)
     !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -515,7 +515,7 @@ subroutine test_append_to_fa_c_xx51s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -536,7 +536,7 @@ subroutine test_append_to_fa_c_xx51(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -557,7 +557,7 @@ subroutine test_append_to_fa_x_xx51(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     !ref_fa(:, d) = -1.5*this%h2(:, c)
     !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -613,7 +613,7 @@ subroutine test_append_to_fa_c_xx61(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -634,7 +634,7 @@ subroutine test_append_to_fa_c_xx61s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -655,7 +655,7 @@ subroutine test_append_to_fa_x_xx61(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     !ref_fa(:, d) = -1.5*this%h2(:, c)
     !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -761,7 +761,7 @@ subroutine test_append_to_fa_c_xx32(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -782,7 +782,7 @@ subroutine test_append_to_fa_c_xx32s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -803,7 +803,7 @@ subroutine test_append_to_fa_x_xx32(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, d) =  ref_fa(:,d) - 1.5*this%h2(:, c)
     ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -850,7 +850,7 @@ subroutine test_append_to_fa_c_xx42s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -871,7 +871,7 @@ subroutine test_append_to_fa_c_xx42(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -892,7 +892,7 @@ subroutine test_append_to_fa_x_xx42(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -951,7 +951,7 @@ subroutine test_append_to_fa_c_xx52s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -972,7 +972,7 @@ subroutine test_append_to_fa_c_xx52(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -993,7 +993,7 @@ subroutine test_append_to_fa_x_xx52(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -1052,7 +1052,7 @@ subroutine test_append_to_fa_c_xx62s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -1073,7 +1073,7 @@ subroutine test_append_to_fa_c_xx62(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -1094,7 +1094,7 @@ subroutine test_append_to_fa_x_xx62(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -1153,7 +1153,7 @@ subroutine test_append_to_fa_c_xx43s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -1174,7 +1174,7 @@ subroutine test_append_to_fa_c_xx43(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -1195,7 +1195,7 @@ subroutine test_append_to_fa_x_xx43(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -1254,7 +1254,7 @@ subroutine test_append_to_fa_c_xx53s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -1275,7 +1275,7 @@ subroutine test_append_to_fa_c_xx53(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -1296,7 +1296,7 @@ subroutine test_append_to_fa_x_xx53(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -1354,7 +1354,7 @@ subroutine test_append_to_fa_c_xx63s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 60
     ref_fa(d, c) = -60
@@ -1375,7 +1375,7 @@ subroutine test_append_to_fa_c_xx63(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(c, d) = 30
     ref_fa(d, c) = -30
@@ -1396,7 +1396,7 @@ subroutine test_append_to_fa_x_xx63(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     ref_fa(:, c) =  ref_fa(:,c) + 1.5*this%h2(:, d)
     ref_fa(c, :) =  ref_fa(c,:) - 1.5*this%h2(d, :)
@@ -1439,7 +1439,7 @@ subroutine test_append_to_fa_x_xx54(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     @assertEqual(ref_fa, this%fa)
 
@@ -1489,7 +1489,7 @@ subroutine test_append_to_fa_c_xx64s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     @assertEqual(ref_fa, this%fa)
 
@@ -1508,7 +1508,7 @@ subroutine test_append_to_fa_c_xx64(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
 
     @assertEqual(ref_fa, this%fa)
 
@@ -1527,7 +1527,7 @@ subroutine test_append_to_fa_x_xx64(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     !ref_fa(:, d) = -1.5*this%h2(:, c)
     !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
@@ -1579,7 +1579,7 @@ subroutine test_append_to_fa_c_xx65s(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .false.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
     @assertEqual(ref_fa, this%fa)
 
 end subroutine
@@ -1597,7 +1597,7 @@ subroutine test_append_to_fa_c_xx65(this)
     this%h2(2:3, 2:3) = reshape((/1, 2, 3, 4/), (/2, 2/))
     this%udv = reshape((/1, 2, 3, 4/), (/2, 2/))
     trplet = .true.
-    call append_to_fa_c(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_c(c, d, this%h2, this%fa, this%udv)
     @assertEqual(ref_fa, this%fa)
 
 end subroutine
@@ -1615,7 +1615,7 @@ subroutine test_append_to_fa_x_xx65(this)
     call random_number(this%h2)
     this%h2 = this%h2 + transpose(this%h2)
     this%udv = reshape((/1, 0, 0, 1/), (/2, 2/))
-    call append_to_fa_x(c, d, this%h2, this%fa, this%udv, this%wrk, size(this%wrk))
+    call append_to_fa_x(c, d, this%h2, this%fa, this%udv)
 
     !ref_fa(:, d) = -1.5*this%h2(:, c)
     !ref_fa(d, :) =  ref_fa(d,:) + 1.5*this%h2(c, :)
