@@ -45,6 +45,8 @@ rsp_modules.o: rsp_modules.F90
 include_mod.o: include_mod.F90
 mpi_dummy.o: mpi_dummy.F
 
+rsptypes.o: sir_modules.o rsp_modules.o include_mod.o list_queries.o
+
 tests: all
 
 $(EXE): testSuites.inc rsptypes.o sir_queries.o rsp_queries.o list_queries.o spnorb_queries.o file_queries.o rsphso_mod.o sir_modules.o include_mod.o mpi_dummy.o test_orbital_queries.pf test_rsp_queries.pf test_inlist.pf test_spnorb_queries.pf test_rsphso.pf TESTS
